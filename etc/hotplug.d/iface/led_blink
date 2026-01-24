@@ -1,0 +1,14 @@
+#!/bin/sh
+# Check if the interface that just came up is WAN
+# [chris] INTERFACE ist lan, auch wenns eigentlich br-lan heisst ??
+logger "/etc/hotplug.d/iface/99-led-stop $INTERFACE $ACTION"
+[ "$INTERFACE" = "lan" ] || exit 0
+
+if [ "$ACTION" = "ifup" ]; then
+    # Set LED to solid on when IP is received
+    echo none > /sys/class/leds/amber:status/trigger
+    echo 0 > /sys/class/leds/amber:status/brightness
+elif [ "$ACTION" = "ifdown" ]; then
+    # Resume blinking if the connection is lost
+    echo timer > /sys/class/leds/amber:status/trigger
+fi

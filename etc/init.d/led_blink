@@ -1,0 +1,10 @@
+#!/bin/sh /etc/rc.common
+# gelbe led beim eap225 beim booten einschalten, /etc/hotplug.d/iface/99-led-stop wenn lan device up ist schaltets wieder ab
+# /etc/init.d/led_blink enable
+START=99
+start() {
+    # Replace 'system:green:status' with your actual LED name
+    echo timer > /sys/class/leds/amber:status/trigger
+    echo 500 > /sys/class/leds/amber:status/delay_on
+    echo 500 > /sys/class/leds/amber:status/delay_off
+}
