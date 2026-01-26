@@ -274,9 +274,10 @@ def configure_r0kh_r1kh(ap: APInfo, all_aps: List[APInfo],
         commands.append(f"uci set wireless.{radio_name}.mobility_domain='{mobility_domain}'")
         commands.append(f"uci set wireless.{radio_name}.ft_over_ds='1'")
         # mit ft_psk_generate_local=0 bleibt das handy auf einem AP picken. angeblich geht bei '1' auch fast transition mit wpa2/3 mixed
-        ft_psk_generate_local=1
+        ft_psk_generate_local=0
         commands.append(f"uci set wireless.{radio_name}.ft_psk_generate_local='{ft_psk_generate_local}'")
-        commands.append(f"uci set wireless.{radio_name}.nasid='{mobility_domain}'")
+        # nasid = r0kh-id = r1_key_holder
+        commands.append(f"uci set wireless.{radio_name}.nasid='{r1_key_holder}'")
         commands.append(f"uci set wireless.{radio_name}.r1_key_holder='{r1_key_holder}'")
         # bei rssi=-72 kicken
         commands.append(f"uci set wireless.{radio_name}.rssi_reject_assoc_rssi='-75'")
@@ -295,8 +296,9 @@ def configure_r0kh_r1kh(ap: APInfo, all_aps: List[APInfo],
     #                continue
                 if other_ap.interface_24:
                     mac = other_ap.interface_24.mac
-                    # R0KH: MAC, Mobility Domain, Secret
-                    r0kh = f"{mac},{mobility_domain},{shared_secret}"
+                    r1_key_holder = mac.replace(":", "")
+                    # R0KH: MAC, nasid == r0kh-id, Secret
+                    r0kh = f"{mac},{r1_key_holder},{shared_secret}"
                     # R1KH: MAC, R1KH-ID (= MAC with colons!), Secret
                     r1kh = f"{mac},{mac},{shared_secret}"
                     commands.append(f"uci add_list wireless.{radio_name}.r0kh='{r0kh}'")
@@ -304,7 +306,8 @@ def configure_r0kh_r1kh(ap: APInfo, all_aps: List[APInfo],
     
                 if other_ap.interface_5:
                     mac = other_ap.interface_5.mac
-                    r0kh = f"{mac},{mobility_domain},{shared_secret}"
+                    r1_key_holder = mac.replace(":", "")
+                    r0kh = f"{mac},{r1_key_holder},{shared_secret}"
                     r1kh = f"{mac},{mac},{shared_secret}"
                     commands.append(f"uci add_list wireless.{radio_name}.r0kh='{r0kh}'")
                     commands.append(f"uci add_list wireless.{radio_name}.r1kh='{r1kh}'")
@@ -411,6 +414,7 @@ def main():
     print(f"{Fore.YELLOW}Step 1: Collecting AP information...{Style.RESET_ALL}\n")
     
     all_aps = []
+    failed_aps = []
     for hostname in ap_hosts:
         try:
             ap_info = collect_ap_info(hostname, ssid)
