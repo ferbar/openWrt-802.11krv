@@ -107,7 +107,9 @@ mit wireshark
 tcpdump -i any -e -X -n ether proto 0x890d
 
 ### am AP:
+für das radio wo ma DEBUG loglevel ham will:
 ```
+uci set wireless.radio0.log_level='1'
 uci set wireless.radio1.log_level='1'
 uci commit wireless
 wifi reload
