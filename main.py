@@ -175,6 +175,11 @@ def configure_neighbors(ap: APInfo, all_aps: List[APInfo], ssid: str, dry_run: b
         
         print(f"  Configuring {band_str} interface ({iface_name}):")
 
+        commands.extend([
+            f"uci set wireless.default_radio{my_iface.phy}.ieee80211k='1'",
+            f"uci set wireless.default_radio{my_iface.phy}.rrm_neighbor_report='1'",
+            f"uci set wireless.default_radio{my_iface.phy}.rrm_beacon_report='1'" ])
+
         # Add all other APs (both bands) as neighbors
         for other_ap in all_aps:
             if other_ap.hostname == ap.hostname:
@@ -264,6 +269,7 @@ def configure_r0kh_r1kh(ap: APInfo, all_aps: List[APInfo],
         commands.append(f"uci set wireless.{radio_name}.encryption='psk2+ccmp'")
         # 802.11w Management Frame Protection 1 == optional
         commands.append(f"uci set wireless.{radio_name}.ieee80211w='1'")
+        # 802.11v unterstützung aktiviern, das alleine tut noch nix
         commands.append(f"uci set wireless.{radio_name}.bss_transition='1'")
         commands.append(f"uci set wireless.{radio_name}.mobility_domain='{mobility_domain}'")
         commands.append(f"uci set wireless.{radio_name}.ft_over_ds='1'")
