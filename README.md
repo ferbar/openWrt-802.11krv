@@ -58,6 +58,10 @@ uci set wireless.default_radio0.ieee80211k='1'
 uci set wireless.default_radio0.rrm_neighbor_report='1'
 uci set wireless.default_radio0.rrm_beacon_report='1'
 ```
+mit dem da können die neigborhood reports manuell generiert werden:
+https://github.com/openwrt/packages/tree/openwrt-22.03/net/static-neighbor-reports
+
+mit usteer automatisch
 
 ### checken
 
@@ -84,8 +88,16 @@ geräte die im wlan schon eingeloggt sind schneller authentifizieren
 
 ### config keys:
 ```
-r0kh	string	no	ff:ff:ff:ff:ff:ff,*,$key                    << steht nicht in der docu, das bedeutet alle accesspoints im Netzwerk
-r1kh	string	no	00:00:00:00:00:00,00:00:00:00:00:00,$key    << detto
+nasid = r0kh_id, r1kh_id MAC adresse ohne : nehmen
+
+r0kh	ff:ff:ff:ff:ff:ff,*,$key                    << steht nicht in der docu, das bedeutet alle accesspoints im Netzwerk
+#       ^^^^^^^^^^^^^^^^^ die BSSID des AP[x]
+#                         ^ die nasid (=R0KH_ID) des AP[x] ohne :
+#                           ^^^ der key für die kommunikation
+r1kh	00:00:00:00:00:00,00:00:00:00:00:00,$key    << detto
+#       ^^^^^^^^^^^^^^^^^ die BSSID des AP[x]
+#                         ^^^^^^^^^^^^^^^^^ R1KH_ID des AP[x] MIT : 
+#                                           ^^^ der key für die kommunikation
 ```
 
 ### checken
