@@ -1,8 +1,9 @@
-# openWrt-802.11krv
+# OpenWrt-802.11krv
 
 
 
 roaming-config.json:
+
 ```
 {
   "ssid": "WIFI-NAME",
@@ -17,9 +18,11 @@ roaming-config.json:
 }
 ```
 
-## allgemein
-### openWrt Wifi Optionen
+## Allgemein
+### OpenWrt Wifi Optionen
 https://openwrt.org/docs/guide-user/network/wifi/basic
+
+https://openwrt.org/docs/guide-user/network/wifi/roaming
 
 ### Speichern und WLAN neu starten
 ```
@@ -46,11 +49,18 @@ unshare --user --map-root-user --mount --propagation private bash -c '
   wireshark -S -k -i '<( ssh "$REMOTE_HOST" "su='' ; if [ \"\$USER\" != \"root\" ]; then echo 'tcpdump needs sudo' >&2 ; su='sudo' ; fi ; \$su tcpdump --immediate-mode -w - $*" )
 ```
 
+### Allgemeine OpenWrt Optionen
+Clients früher aus dem Wlan raushauen (nicht im script eingebaut)
+```
+wireless.default_radio0.rssi_reject_assoc_rssi='-75'
+```
 
 ## 802.11k Neighbour Reports
 hints mit andern Accesspoints in dem Wlan
 
-das script installiert das paket static-neighbor-reports
+das script installiert das Paket static-neighbor-reports
+
+Alternative: usteer auf allen accesspoints installieren und das usteer die neghborhood reports machen lassen
 
 ### 802.11k aktivieren (macht das script)
 ```

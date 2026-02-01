@@ -264,11 +264,12 @@ def configure_r0kh_r1kh(ap: APInfo, all_aps: List[APInfo],
         radio_name = f"default_radio{radio.phy}"
         r1_key_holder = radio.mac.replace(":", "")
         print(f"  Setting Fast Transition Config {radio_name}...")
+        # FT geht mit generate_local=1 und wpa2; wpa2+3 braucht generate_local=0 und die R0KH und R1KH richtig ausgefüllt
         #commands.append(f"uci set wireless.{radio_name}.encryption='sae-mixed'")
-        # FT geht nur wenn generate_local=1 und generate_local geht nur mit wpa2
         commands.append(f"uci set wireless.{radio_name}.encryption='psk2+ccmp'")
         # 802.11w Management Frame Protection 1 == optional
         commands.append(f"uci set wireless.{radio_name}.ieee80211w='1'")
+        # WMM default option =1 => müss ma ned extra setzen
         # 802.11v unterstützung aktiviern, das alleine tut noch nix
         commands.append(f"uci set wireless.{radio_name}.bss_transition='1'")
         commands.append(f"uci set wireless.{radio_name}.mobility_domain='{mobility_domain}'")
@@ -279,7 +280,7 @@ def configure_r0kh_r1kh(ap: APInfo, all_aps: List[APInfo],
         # nasid = r0kh-id = r1_key_holder
         commands.append(f"uci set wireless.{radio_name}.nasid='{r1_key_holder}'")
         commands.append(f"uci set wireless.{radio_name}.r1_key_holder='{r1_key_holder}'")
-        # bei rssi=-72 kicken
+        # bei rssi=-72 kicken, disassoc_low_ack=1 =default
         commands.append(f"uci set wireless.{radio_name}.rssi_reject_assoc_rssi='-75'")
         
         print(f"  Cleaning old r0kh/r1kh {radio_name}...")
